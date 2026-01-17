@@ -63,61 +63,6 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 
 int main(int, char **)
 {
-     // set up vertex data (and buffer(s)) and configure vertex attributes
-     // ------------------------------------------------------------------
-     float cubeVertices[] = {
-   -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-     };
-     float squareVertices[] = {
-     // positions     // colors
-          -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
-          0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
-          -0.05f, -0.05f,  0.0f, 0.0f, 1.0f,
-
-          -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
-          0.05f, -0.05f,  0.0f, 1.0f, 0.0f,   
-          0.05f,  0.05f,  0.0f, 1.0f, 1.0f		    		
-     };  
      float quadVertices[] = {
           // positions     // texCoords
           -1.0f,  1.0f,  0.0f, 1.0f,
@@ -129,56 +74,86 @@ int main(int, char **)
           1.0f,  1.0f,  1.0f, 1.0f
      };
      float skyboxVertices[] = {
-    // positions          
-    -1.0f,  1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
+     // positions          
+         -1.0f,  1.0f, -1.0f,
+         -1.0f, -1.0f, -1.0f,
+          1.0f, -1.0f, -1.0f,
+          1.0f, -1.0f, -1.0f,
+          1.0f,  1.0f, -1.0f,
+         -1.0f,  1.0f, -1.0f,
 
-    -1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
+         -1.0f, -1.0f,  1.0f,
+         -1.0f, -1.0f, -1.0f,
+         -1.0f,  1.0f, -1.0f,
+         -1.0f,  1.0f, -1.0f,
+         -1.0f,  1.0f,  1.0f,
+         -1.0f, -1.0f,  1.0f,
 
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
+          1.0f, -1.0f, -1.0f,
+          1.0f, -1.0f,  1.0f,
+          1.0f,  1.0f,  1.0f,
+          1.0f,  1.0f,  1.0f,
+          1.0f,  1.0f, -1.0f,
+          1.0f, -1.0f, -1.0f,
 
-    -1.0f, -1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
+         -1.0f, -1.0f,  1.0f,
+         -1.0f,  1.0f,  1.0f,
+          1.0f,  1.0f,  1.0f,
+          1.0f,  1.0f,  1.0f,
+          1.0f, -1.0f,  1.0f,
+         -1.0f, -1.0f,  1.0f,
 
-    -1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f, -1.0f,
+         -1.0f,  1.0f, -1.0f,
+          1.0f,  1.0f, -1.0f,
+          1.0f,  1.0f,  1.0f,
+          1.0f,  1.0f,  1.0f,
+         -1.0f,  1.0f,  1.0f,
+         -1.0f,  1.0f, -1.0f,
 
-    -1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f
 };
-     float points[] = {
-         -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // top-left
-          0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // top-right
-          0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // bottom-right
-         -0.5f, -0.5f, 1.0f, 1.0f, 0.0f  // bottom-left
-     };
+     
+     float octahedronVertices[] = {
+          //top-north-west
+          0.0,  1.0,  0.0,
+          -1.0,  0.0,  0.0,
+          0.0,  0.0,  1.0,
 
+          //top-south-west
+          0.0,  1.0,  0.0,
+          0.0,  0.0, -1.0,
+          -1.0,  0.0,  0.0,
+
+          //top-south-east
+          0.0,  1.0,  0.0,
+          1.0,  0.0,  0.0,
+          0.0,  0.0, -1.0,
+
+          //bottom-north-east
+          0.0, -1.0,  0.0,
+          1.0,  0.0,  0.0,
+          0.0,  0.0,  1.0,
+
+          //bottom-north-west
+          0.0, -1.0,  0.0,
+          0.0,  0.0,  1.0,
+          -1.0,  0.0,  0.0,
+
+          //bottom-south-west
+          0.0, -1.0,  0.0,
+          -1.0,  0.0,  0.0,
+          0.0,  0.0, -1.0,
+
+          //bottom-south-east
+          0.0, -1.0,  0.0,
+          0.0,  0.0, -1.0,
+          1.0,  0.0,  0.0,
+     };
      GLFWwindow *window;
 
      if (!glfwInit())
@@ -215,17 +190,8 @@ int main(int, char **)
      glGenTextures(1, &texID);
      glBindTexture(GL_TEXTURE_CUBE_MAP, texID);
      // models
-     Model bag("../assets/bag/bag.obj");
      Model asteroids("../assets/rock/rock.obj");
-     Model planet("../assets/planet/planet.obj");
-
-     // cube geometry 
-     VAO cubeVAO;
-     VBO cubeVBO(cubeVertices, sizeof(cubeVertices));
-     cubeVAO.Bind();
-     cubeVAO.LinkAttrib(cubeVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
-     cubeVAO.LinkAttrib(cubeVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void *)(3 * sizeof(float)));
-     cubeVAO.Unbind();
+     
      // quad geometry
      VAO quadVAO;
      VBO quadVBO(quadVertices, sizeof(quadVertices));
@@ -239,13 +205,12 @@ int main(int, char **)
      skyboxVAO.Bind();
      skyboxVAO.LinkAttrib(skyboxVBO, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
      skyboxVAO.Unbind();
-     // points geometry
-     VAO pointsVAO;
-     VBO pointsVBO(points, sizeof(points));
-     pointsVAO.Bind();
-     pointsVAO.LinkAttrib(pointsVBO, 0, 2, GL_FLOAT, 5 * sizeof(float), (void*)0);
-     pointsVAO.LinkAttrib(pointsVBO, 1, 3, GL_FLOAT, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-     pointsVAO.Unbind();
+     // octrahedron geometry
+     VAO octaVAO;
+     VBO octaVBO(octahedronVertices, sizeof(octahedronVertices));
+     octaVAO.Bind();
+     octaVAO.LinkAttrib(octaVBO, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
+     octaVAO.Unbind();
      // create transformation matrices
      unsigned int amount = 1000;
      glm::mat4* modelMatrices;
@@ -316,7 +281,6 @@ int main(int, char **)
      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
      glBindTexture(GL_TEXTURE_2D, 0); 
-
      // render buffer
      unsigned int rbo;
      glGenRenderbuffers(1, &rbo);
@@ -344,6 +308,8 @@ int main(int, char **)
      // setting uniform block points
      unsigned int mainS_index = glGetUniformBlockIndex(mainShader.ID, "Matrices");
      glUniformBlockBinding(mainShader.ID, mainS_index, 0);
+     unsigned int instanceS_index = glGetUniformBlockIndex(instanceShader.ID, "Matrices");
+     glUniformBlockBinding(instanceShader.ID, instanceS_index, 0);
 
      glEnable(GL_DEPTH_TEST); // Allows for depth comparison and updates the depth buffer
     // glEnable(GL_BLEND); // enable alpha blending
@@ -421,59 +387,22 @@ int main(int, char **)
           glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera.GetViewMatrix()));
           glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-          glm::mat4 proj = camera.GetProjMatrix();
-          glm::mat4 view = camera.GetViewMatrix();
-          instanceShader.Activate();
-          instanceShader.SetToMat4("projection", proj);
-          instanceShader.SetToMat4("view", view);
-          modelShader.Activate();
-          modelShader.SetToMat4("projection", proj);
-          modelShader.SetToMat4("view", view);
-
-          // drawing planet
+          // drawing octahedron
           glm::mat4 model = glm::mat4(1.0f);
-          model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
-          model = glm::scale(model, glm::vec3(10.0f));
-          modelShader.SetToMat4("model", model);
-          planet.Draw(modelShader);
-          // drawing asteroids
           instanceShader.Activate();
-          instanceShader.SetToInt("text", 0);
-          glActiveTexture(GL_TEXTURE0);
-          glBindTexture(GL_TEXTURE_2D, asteroids.textures_loaded[0].id);
-          for(unsigned int i = 0; i < asteroids.meshes.size(); i++)
+          instanceShader.SetToMat4("model", model);
+          octaVAO.Bind();
+          glDrawArrays(GL_TRIANGLES, 0, 24);
+          octaVAO.Unbind();
+
+          // drawing asteroids
+          /*for(unsigned int i = 0; i < asteroids.meshes.size(); i++)
           {
                glBindVertexArray(asteroids.meshes[i].VAO);
                glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(asteroids.meshes[i].indices.size()), GL_UNSIGNED_INT, 0, amount);
                glBindVertexArray(0);
-          }
+          }*/
           
-          // Geometry
-          // Some uniforms 
-         /*mainShader.Activate();
-          mainShader.SetToVec3("cameraPos", &camera.Position[0]);
-          // Cubes
-          // First cube
-          cubeVAO.Bind();
-          glActiveTexture(GL_TEXTURE0);
-          glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-          glm::mat4 model = glm::mat4(1.0f);
-          model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-          mainShader.SetToMat4("model", model);
-          glDrawArrays(GL_TRIANGLES, 0, 36);
-          // Second cube
-          model = glm::mat4(1.0f);
-          model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-          mainShader.SetToMat4("model", model);
-          glDrawArrays(GL_TRIANGLES, 0, 36);
-          cubeVAO.Unbind();
-          // Duffle bag model
-          model = glm::mat4(1.0f);
-          model = glm::translate(model, glm::vec3(2.0f, 0.0f, 2.0f));
-          model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-          mainShader.SetToMat4("model", model);
-          bag.Draw(mainShader);
-
           // Sky Box
           glDepthFunc(GL_LEQUAL);
           skyboxShader.Activate();
@@ -485,7 +414,7 @@ int main(int, char **)
           glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
           glDrawArrays(GL_TRIANGLES, 0, 36);
           glDepthFunc(GL_LESS);
-          skyboxVAO.Unbind();*/
+          skyboxVAO.Unbind();
 
           glBindFramebuffer(GL_FRAMEBUFFER, 0);
           glDisable(GL_DEPTH_TEST);
@@ -517,12 +446,8 @@ int main(int, char **)
      ImGui_ImplGlfw_Shutdown();
      ImGui::DestroyContext();
 
-     cubeVAO.Delete();
-     cubeVBO.Delete();
      quadVAO.Delete();
      quadVBO.Delete();
-     pointsVAO.Delete();
-     pointsVBO.Delete();
      glDeleteRenderbuffers(1, &rbo);
      glDeleteFramebuffers(1, &fbo);
      glDeleteBuffers(1, &ubo);

@@ -37,7 +37,7 @@ unsigned int LoadCubeMap(std::vector<std::string> faces)
           unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
           if(data)
           {
-               glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+               glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
                stbi_image_free(data);
           }
           else
@@ -55,6 +55,14 @@ unsigned int LoadCubeMap(std::vector<std::string> faces)
 
     return textureID;
 }
+
+/*std::vector<glm::vec3> ComputeNormals(std::vector<glm::vec3> vertices, std::vector<glm::vec3>* vArr)
+{
+     for(unsigned int i = 0; i < vertices.size(); i += 3)
+     {
+          glm::vec3 A = vertices[i];
+     }
+}*/
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -118,42 +126,6 @@ int main(int, char **)
          1.0f, -1.0f,  1.0f
 };
      
-     float octahedronVertices[] = {
-          //top-north-west
-          0.0,  1.0,  0.0,
-          -1.0,  0.0,  0.0,
-          0.0,  0.0,  1.0,
-
-          //top-south-west
-          0.0,  1.0,  0.0,
-          0.0,  0.0, -1.0,
-          -1.0,  0.0,  0.0,
-
-          //top-south-east
-          0.0,  1.0,  0.0,
-          1.0,  0.0,  0.0,
-          0.0,  0.0, -1.0,
-
-          //bottom-north-east
-          0.0, -1.0,  0.0,
-          1.0,  0.0,  0.0,
-          0.0,  0.0,  1.0,
-
-          //bottom-north-west
-          0.0, -1.0,  0.0,
-          0.0,  0.0,  1.0,
-          -1.0,  0.0,  0.0,
-
-          //bottom-south-west
-          0.0, -1.0,  0.0,
-          -1.0,  0.0,  0.0,
-          0.0,  0.0, -1.0,
-
-          //bottom-south-east
-          0.0, -1.0,  0.0,
-          0.0,  0.0, -1.0,
-          1.0,  0.0,  0.0,
-     };
      GLFWwindow *window;
 
      if (!glfwInit())
@@ -182,15 +154,13 @@ int main(int, char **)
      Shader instanceShader("../assets/shaders/instance.vert", "../assets/shaders/instance.frag");
 
      pointShader.LinkGeometry("../assets/shaders/points.geom");
-     // textures
-     TextureUnit cubeTexture("../container.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
-     TextureUnit floorTexture("../marble.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
      // cubemap texture
      unsigned int texID;
      glGenTextures(1, &texID);
      glBindTexture(GL_TEXTURE_CUBE_MAP, texID);
      // models
      Model asteroids("../assets/rock/rock.obj");
+     Model icosphere("../assets/icosphere.obj");
      
      // quad geometry
      VAO quadVAO;
@@ -205,12 +175,6 @@ int main(int, char **)
      skyboxVAO.Bind();
      skyboxVAO.LinkAttrib(skyboxVBO, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
      skyboxVAO.Unbind();
-     // octrahedron geometry
-     VAO octaVAO;
-     VBO octaVBO(octahedronVertices, sizeof(octahedronVertices));
-     octaVAO.Bind();
-     octaVAO.LinkAttrib(octaVBO, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
-     octaVAO.Unbind();
      // create transformation matrices
      unsigned int amount = 1000;
      glm::mat4* modelMatrices;
@@ -242,7 +206,6 @@ int main(int, char **)
           // add to the list of matrices that we have
           modelMatrices[i] = model;
      }
-
      VBO buffer(&modelMatrices[0][0][0], amount * sizeof(glm::mat4));
 
      for(unsigned int i = 0; i < asteroids.meshes.size(); i++)
@@ -271,7 +234,6 @@ int main(int, char **)
      unsigned int fbo;
      glGenFramebuffers(1, &fbo);
      glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
      // texture for frame buffer
      unsigned int texture;
      glGenTextures(1, &texture);
@@ -320,34 +282,16 @@ int main(int, char **)
      float deltaTime = 0.0f;
      float lastFrame = 0.0f;
      
-     // cubemap textures
-     std::vector<std::string> cubemaps = {
-          "../assets/skybox/left.jpg",
-          "../assets/skybox/right.jpg",
-          "../assets/skybox/bottom.jpg",
-          "../assets/skybox/top.jpg",
-          "../assets/skybox/back.jpg",
-          "../assets/skybox/front.jpg"
+    // cube map texture
+     std::vector<std::string> spaceMaps = {
+          "../assets/spaceEnv/left.png",
+          "../assets/spaceEnv/right.png",
+          "../assets/spaceEnv/top.png",
+          "../assets/spaceEnv/bottom.png",
+          "../assets/spaceEnv/back.png",
+          "../assets/spaceEnv/front.png"
      };
-
-     std::vector<std::string> stylizedMaps = {
-          "../assets/stylizedSkybox/nx.png",
-          "../assets/stylizedSkybox/px.png",
-           "../assets/stylizedSkybox/ny.png",
-           "../assets/stylizedSkybox/py.png",
-          "../assets/stylizedSkybox/nz.png",
-          "../assets/stylizedSkybox/pz.png"
-     };
-
-     std::vector<std::string> yokohamaMaps = {
-          "../assets/Yokohama3/negx.jpg",
-          "../assets/Yokohama3/posx.jpg",
-          "../assets/Yokohama3/negy.jpg",
-          "../assets/Yokohama3/posy.jpg",
-          "../assets/Yokohama3/negz.jpg",
-          "../assets/Yokohama3/posz.jpg"
-     };
-     unsigned int cubemapTexture = LoadCubeMap(yokohamaMaps);
+     unsigned int cubemapTexture = LoadCubeMap(spaceMaps);
 
      IMGUI_CHECKVERSION();
      ImGui::CreateContext();
@@ -391,9 +335,10 @@ int main(int, char **)
           glm::mat4 model = glm::mat4(1.0f);
           instanceShader.Activate();
           instanceShader.SetToMat4("model", model);
-          octaVAO.Bind();
-          glDrawArrays(GL_TRIANGLES, 0, 24);
-          octaVAO.Unbind();
+          instanceShader.SetToVec3("cameraPos", &camera.Position[0]);
+          glActiveTexture(GL_TEXTURE0);
+          glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+          icosphere.Draw(instanceShader);
 
           // drawing asteroids
           /*for(unsigned int i = 0; i < asteroids.meshes.size(); i++)

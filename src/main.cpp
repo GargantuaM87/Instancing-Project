@@ -176,7 +176,7 @@ int main(int, char **)
      skyboxVAO.LinkAttrib(skyboxVBO, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
      skyboxVAO.Unbind();
      // create transformation matrices
-     unsigned int amount = 1000;
+     unsigned int amount = 10000;
      glm::mat4* modelMatrices;
      modelMatrices = new glm::mat4[amount];
      srand(static_cast<unsigned int>(glfwGetTime())); // initialize random seed
@@ -196,7 +196,7 @@ int main(int, char **)
           model = glm::translate(model, glm::vec3(x, y, z));
 
           // scaling
-          float scale = static_cast<float>((rand() % 20) / 100.0 + 0.05);
+          float scale = static_cast<float>((rand() % 20) / 50.0 + 0.05);
           model = glm::scale(model, glm::vec3(scale));
 
           // rotation
@@ -204,13 +204,14 @@ int main(int, char **)
           model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
 
           // add to the list of matrices that we have
+          // resonsible for an amount of model matrices with varying displacements, rotations, and scales
           modelMatrices[i] = model;
      }
      VBO buffer(&modelMatrices[0][0][0], amount * sizeof(glm::mat4));
 
-     for(unsigned int i = 0; i < asteroids.meshes.size(); i++)
+     for(unsigned int i = 0; i < icosphere.meshes.size(); i++)
      {
-        unsigned int VAO = asteroids.meshes[i].VAO;
+        unsigned int VAO = icosphere.meshes[i].VAO;
         glBindVertexArray(VAO);
         // set attribute pointers for matrix (4 times vec4)
         glEnableVertexAttribArray(3);
@@ -221,7 +222,8 @@ int main(int, char **)
         glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
         glEnableVertexAttribArray(6);
         glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
-
+        // the functions below tell openGL to change these layouts every new instance
+        // by default, they'll change every iteration of the vertex shader
         glVertexAttribDivisor(3, 1);
         glVertexAttribDivisor(4, 1);
         glVertexAttribDivisor(5, 1);
@@ -331,22 +333,20 @@ int main(int, char **)
           glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera.GetViewMatrix()));
           glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-          // drawing octahedron
-          glm::mat4 model = glm::mat4(1.0f);
+          // drawing icosphere
           instanceShader.Activate();
-          instanceShader.SetToMat4("model", model);
           instanceShader.SetToVec3("cameraPos", &camera.Position[0]);
           glActiveTexture(GL_TEXTURE0);
           glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
           icosphere.Draw(instanceShader);
 
-          // drawing asteroids
-          /*for(unsigned int i = 0; i < asteroids.meshes.size(); i++)
+          //drawing asteroids
+          for(unsigned int i = 0; i < icosphere.meshes.size(); i++)
           {
-               glBindVertexArray(asteroids.meshes[i].VAO);
-               glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(asteroids.meshes[i].indices.size()), GL_UNSIGNED_INT, 0, amount);
+               glBindVertexArray(icosphere.meshes[i].VAO);
+               glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(icosphere.meshes[i].indices.size()), GL_UNSIGNED_INT, 0, amount);
                glBindVertexArray(0);
-          }*/
+          }
           
           // Sky Box
           glDepthFunc(GL_LEQUAL);

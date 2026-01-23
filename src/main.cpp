@@ -12,6 +12,7 @@
 #include "../headers/EBO.h"
 #include "../headers/VBO.h"
 #include "../headers/VAO.h"
+#include "../headers/FBO.h"
 #include "../headers/texture.h"
 #include "../headers/camera.h"
 #include "../headers/uniform.h"
@@ -224,33 +225,20 @@ int main(int, char **)
      }
 
      // frame buffer
-     unsigned int fbo;
-     glGenFramebuffers(1, &fbo);
-     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-     // texture for frame buffer
-     unsigned int texture;
-     glGenTextures(1, &texture);
-     glBindTexture(GL_TEXTURE_2D, texture);
-     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 800, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
-     glBindTexture(GL_TEXTURE_2D, 0); 
-     // render buffer
-     unsigned int rbo;
-     glGenRenderbuffers(1, &rbo);
-     glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 800);
-     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-     glBindRenderbuffer(GL_RENDERBUFFER, 0);
+     FBO fbo;
+     // attatch texture for frame buffer
+     fbo.AttatchTexture(width, height);
+     // attatch renderbuffer for frame buffer
+     fbo.AttatchRenderBuffer(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, width, height);
+     // check status
+     fbo.CheckStatus();
+     fbo.Unbind();
 
-     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) 
-          std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-     glBindFramebuffer(GL_FRAMEBUFFER, 0);
      // camera object
      Camera camera(width, height, glm::vec3(0.0f, 2.0f, 100.0f));
      // Setting up the camera's view and projection matrices
      camera.Matrix(45.0f, 0.1f, 200.0f);
+     
      // uniform buffer object
      unsigned int ubo;
      glGenBuffers(1, &ubo);
@@ -304,7 +292,7 @@ int main(int, char **)
      // Main Render Loop
      while (!glfwWindowShouldClose(window))
      {
-          glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+          fbo.Bind();
           glEnable(GL_DEPTH_TEST);
 
           glClearColor(0.0f, 0.0f, 0.15f, 1.0f);
@@ -381,7 +369,7 @@ int main(int, char **)
           glDepthFunc(GL_LESS);
           skyboxVAO.Unbind();
 
-          glBindFramebuffer(GL_FRAMEBUFFER, 0);
+          fbo.Unbind();
           glDisable(GL_DEPTH_TEST);
           glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
           glClear(GL_COLOR_BUFFER_BIT);
@@ -389,7 +377,7 @@ int main(int, char **)
           framebufferShader.Activate();
           framebufferShader.SetToInt("currentKernel", currentItem);
           quadVAO.Bind();
-          glBindTexture(GL_TEXTURE_2D, texture);
+          fbo.BindTexture();
           glDrawArrays(GL_TRIANGLES, 0, 6);
           quadVAO.Unbind();
           
@@ -421,8 +409,7 @@ int main(int, char **)
 
      quadVAO.Delete();
      quadVBO.Delete();
-     glDeleteRenderbuffers(1, &rbo);
-     glDeleteFramebuffers(1, &fbo);
+     fbo.Delete();
      glDeleteBuffers(1, &ubo);
      
      glfwTerminate();

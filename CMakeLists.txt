@@ -10,6 +10,7 @@ src/shaderClass.cpp
 src/VAO.cpp
 src/VBO.cpp
 src/EBO.cpp
+src/FBO.cpp
 src/glad.h 
 src/glad.c
 src/stb.cpp

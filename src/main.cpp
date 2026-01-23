@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../headers/imgui/imgui.h"
+#include "../headers/imgui/imgui_internal.h"
 #include "../headers/imgui/imgui_impl_glfw.h"
 #include "../headers/imgui/imgui_impl_opengl3.h"
 #include "glad.h"
@@ -56,13 +57,6 @@ unsigned int LoadCubeMap(std::vector<std::string> faces)
     return textureID;
 }
 
-/*std::vector<glm::vec3> ComputeNormals(std::vector<glm::vec3> vertices, std::vector<glm::vec3>* vArr)
-{
-     for(unsigned int i = 0; i < vertices.size(); i += 3)
-     {
-          glm::vec3 A = vertices[i];
-     }
-}*/
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -147,19 +141,16 @@ int main(int, char **)
      }
      // shaders
      Shader mainShader("../assets/shaders/lightSource.vert", "../assets/shaders/lightSource.frag"); // Shader program for light sources
-     Shader simpleShader("../assets/shaders/simple.vert", "../assets/shaders/simple.frag");
+     Shader framebufferShader("../assets/shaders/framebuffer.vert", "../assets/shaders/framebuffer.frag");
      Shader skyboxShader("../assets/shaders/skybox.vert", "../assets/shaders/skybox.frag");
      Shader modelShader("../assets/shaders/model.vert", "../assets/shaders/model.frag");
-     Shader pointShader("../assets/shaders/points.vert", "../assets/shaders/points.frag");
      Shader instanceShader("../assets/shaders/instance.vert", "../assets/shaders/instance.frag");
-
-     pointShader.LinkGeometry("../assets/shaders/points.geom");
      // cubemap texture
      unsigned int texID;
      glGenTextures(1, &texID);
      glBindTexture(GL_TEXTURE_CUBE_MAP, texID);
      // models
-     Model asteroids("../assets/rock/rock.obj");
+     Model planet("../assets/planet/planet.obj");
      Model icosphere("../assets/icosphere.obj");
      
      // quad geometry
@@ -257,7 +248,7 @@ int main(int, char **)
           std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
      glBindFramebuffer(GL_FRAMEBUFFER, 0);
      // camera object
-     Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
+     Camera camera(width, height, glm::vec3(0.0f, 2.0f, 100.0f));
      // Setting up the camera's view and projection matrices
      camera.Matrix(45.0f, 0.1f, 200.0f);
      // uniform buffer object
@@ -274,12 +265,17 @@ int main(int, char **)
      glUniformBlockBinding(mainShader.ID, mainS_index, 0);
      unsigned int instanceS_index = glGetUniformBlockIndex(instanceShader.ID, "Matrices");
      glUniformBlockBinding(instanceShader.ID, instanceS_index, 0);
+     unsigned int modelS_index = glGetUniformBlockIndex(modelShader.ID, "Matrices");
+     glUniformBlockBinding(modelShader.ID, modelS_index, 0);
 
      glEnable(GL_DEPTH_TEST); // Allows for depth comparison and updates the depth buffer
     // glEnable(GL_BLEND); // enable alpha blending
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
      glm::vec3 lightPos(0.5f, 0.5f, 0.0f);
+     glm::vec3 lightDir(1.0f);
+     float spinSpeed = 0.01f;
+     static int currentItem = 0;
 
      float deltaTime = 0.0f;
      float lastFrame = 0.0f;
@@ -333,6 +329,31 @@ int main(int, char **)
           glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera.GetViewMatrix()));
           glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+         /* // model shader uniforms
+          modelShader.SetToVec3("uViewPos", &camera.Position[0]);
+          modelShader.SetToFloat("shininess", 16.0f);
+          // directional light
+          modelShader.SetToVec3("dirLight.direction", &lightDir[0]);
+          modelShader.SetToVec3("dirLight.ambient", &glm::vec3(0.4f)[0]);
+          modelShader.SetToVec3("dirLight.diffuse", &glm::vec3(1.0f)[0]);
+          modelShader.SetToVec3("dirLight.specular", &glm::vec3(0.08f)[0]);
+          // point light
+          modelShader.SetToVec3("pointLight.position", &lightPos[0]);
+          modelShader.SetToVec3("pointLight.ambient", &glm::vec3(0.8f)[0]);
+          modelShader.SetToVec3("pointLight.diffuse", &glm::vec3(1.0f)[0]);
+          modelShader.SetToVec3("pointLight.specular", &glm::vec3(1.0f)[0]);
+          modelShader.SetToFloat("pointLight.constant", 1.0f);
+          modelShader.SetToFloat("pointLight.linear", 0.09f);
+          modelShader.SetToFloat("pointLight.quadratic", 0.032f);*/
+
+          //drawing planet
+          glm::mat4 model = glm::mat4(1.0f);
+          model = glm::scale(model, glm::vec3(10.0f));
+          model = glm::rotate(model, static_cast<float>(glfwGetTime()) * spinSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+          modelShader.Activate();
+          modelShader.SetToMat4("model", model);
+          planet.Draw(modelShader);
+
           // drawing icosphere
           instanceShader.Activate();
           instanceShader.SetToVec3("cameraPos", &camera.Position[0]);
@@ -340,7 +361,6 @@ int main(int, char **)
           glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
           icosphere.Draw(instanceShader);
 
-          //drawing asteroids
           for(unsigned int i = 0; i < icosphere.meshes.size(); i++)
           {
                glBindVertexArray(icosphere.meshes[i].VAO);
@@ -366,7 +386,8 @@ int main(int, char **)
           glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
           glClear(GL_COLOR_BUFFER_BIT);
 
-          simpleShader.Activate();
+          framebufferShader.Activate();
+          framebufferShader.SetToInt("currentKernel", currentItem);
           quadVAO.Bind();
           glBindTexture(GL_TEXTURE_2D, texture);
           glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -375,7 +396,14 @@ int main(int, char **)
           // GUI STUFF
           ImGui::Begin("OpenGL Settings Panel");
           ImGui::Text("Tweaks");
-     
+          ImGui::SliderFloat("Rotation Speed", &spinSpeed, 0.01, 1.0f, "%.3f", 0);
+          ImGui::SliderFloat3("Light Position", &lightPos[0], 0.0f, 15.0f);
+          ImGui::SliderFloat3("Directional Light Direction", &lightDir[0], 0.0f, 15.0f);
+
+          const char* items[] = {"Identity", "Edge-Detection", "Box-Blur", "Guassian-Blur", "Emboss", "Sharpen"};
+          
+          ImGui::Combo("Post-Processing", &currentItem, items, IM_ARRAYSIZE(items));
+          
           ImGui::End();
 
           ImGui::Render();

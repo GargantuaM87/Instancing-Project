@@ -238,7 +238,7 @@ int main(int, char **)
      Camera camera(width, height, glm::vec3(0.0f, 2.0f, 100.0f));
      // Setting up the camera's view and projection matrices
      camera.Matrix(45.0f, 0.1f, 200.0f);
-     
+
      // uniform buffer object
      unsigned int ubo;
      glGenBuffers(1, &ubo);
@@ -260,10 +260,11 @@ int main(int, char **)
     // glEnable(GL_BLEND); // enable alpha blending
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-     glm::vec3 lightPos(0.5f, 0.5f, 0.0f);
+     glm::vec3 lightPos(1.0f);
      glm::vec3 lightDir(1.0f);
      float spinSpeed = 0.01f;
      static int currentItem = 0;
+     bool gammaCheck = true;
 
      float deltaTime = 0.0f;
      float lastFrame = 0.0f;
@@ -317,7 +318,7 @@ int main(int, char **)
           glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera.GetViewMatrix()));
           glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-         /* // model shader uniforms
+          /* model shader uniforms
           modelShader.SetToVec3("uViewPos", &camera.Position[0]);
           modelShader.SetToFloat("shininess", 16.0f);
           // directional light
@@ -338,6 +339,13 @@ int main(int, char **)
           glm::mat4 model = glm::mat4(1.0f);
           model = glm::scale(model, glm::vec3(10.0f));
           model = glm::rotate(model, static_cast<float>(glfwGetTime()) * spinSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+          modelShader.Activate();
+          modelShader.SetToMat4("model", model);
+          planet.Draw(modelShader);
+
+          // temp planet as light source
+          model = glm::mat4(1.0f);
+          model = glm::translate(model, glm::vec3(lightPos));
           modelShader.Activate();
           modelShader.SetToMat4("model", model);
           planet.Draw(modelShader);
@@ -376,6 +384,7 @@ int main(int, char **)
 
           framebufferShader.Activate();
           framebufferShader.SetToInt("currentKernel", currentItem);
+          framebufferShader.SetToInt("gammaCorrection", gammaCheck);
           quadVAO.Bind();
           fbo.BindTexture();
           glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -385,12 +394,13 @@ int main(int, char **)
           ImGui::Begin("OpenGL Settings Panel");
           ImGui::Text("Tweaks");
           ImGui::SliderFloat("Rotation Speed", &spinSpeed, 0.01, 1.0f, "%.3f", 0);
-          ImGui::SliderFloat3("Light Position", &lightPos[0], 0.0f, 15.0f);
+          ImGui::SliderFloat3("Light Position", &lightPos[0], 0.0f, 100.0f);
           ImGui::SliderFloat3("Directional Light Direction", &lightDir[0], 0.0f, 15.0f);
 
           const char* items[] = {"Identity", "Edge-Detection", "Box-Blur", "Guassian-Blur", "Emboss", "Sharpen"};
           
           ImGui::Combo("Post-Processing", &currentItem, items, IM_ARRAYSIZE(items));
+          ImGui::Checkbox("Gamma Correction", &gammaCheck);
           
           ImGui::End();
 

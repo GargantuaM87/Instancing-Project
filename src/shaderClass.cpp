@@ -80,6 +80,7 @@ void Shader::SetToInt(const char* uniform, GLint value) {
     glUniform1i(uniformLoc, value);
 }
 
+
 void Shader::SetToMat4(const char* uniform, glm::mat4 &matrix) {
     glUniformMatrix4fv(glGetUniformLocation(ID, uniform), 1, GL_FALSE, &matrix[0][0]);
 }

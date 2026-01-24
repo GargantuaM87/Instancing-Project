@@ -5,8 +5,11 @@ in vec2 TexCoords;
 
 uniform sampler2D screenTexture;
 uniform int currentKernel;
+uniform int gammaCorrection;
 
 const float offset = 1.0 / 300.0;
+float gamma = 2.2;
+
 
 void main() {
   vec2 offsets[9] = vec2[](
@@ -75,5 +78,11 @@ void main() {
    {
         col += sampleTex[i] * kernel[i];
    }
-   FragColor = vec4(col, 1.0f);
+
+   if(gammaCorrection == 1)
+    gamma = 2.2;
+   else 
+    gamma = 1.0;
+   FragColor = vec4(pow(col.rgb, vec3(gamma)), 1.0);
+   //FragColor = vec4(col, 1.0);
 }

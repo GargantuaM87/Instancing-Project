@@ -224,15 +224,21 @@ int main(int, char **)
         glBindVertexArray(0);
      }
 
-     // frame buffer
+
+     // multisampled frame buffer
+     FBO fboMSAA;
+     fboMSAA.AttatchTextureMSAA(4, width, height);
+     fboMSAA.AttatchRenderBufferMSAA(4, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, width, height);
+     fboMSAA.CheckStatus();
+     fboMSAA.Unbind();
+
+     // intermediate frame buffer
      FBO fbo;
-     // attatch texture for frame buffer
      fbo.AttatchTexture(width, height);
-     // attatch renderbuffer for frame buffer
-     fbo.AttatchRenderBuffer(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, width, height);
-     // check status
      fbo.CheckStatus();
      fbo.Unbind();
+
+
 
      // camera object
      Camera camera(width, height, glm::vec3(0.0f, 2.0f, 100.0f));
@@ -293,7 +299,7 @@ int main(int, char **)
      // Main Render Loop
      while (!glfwWindowShouldClose(window))
      {
-          fbo.Bind();
+          fboMSAA.Bind();
           glEnable(GL_DEPTH_TEST);
 
           glClearColor(0.0f, 0.0f, 0.15f, 1.0f);
@@ -371,7 +377,11 @@ int main(int, char **)
           glDepthFunc(GL_LESS);
           skyboxVAO.Unbind();
 
-          fbo.Unbind();
+          glBindFramebuffer(GL_READ_FRAMEBUFFER, fboMSAA.ID);
+          glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo.ID);
+          glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+          fboMSAA.Unbind();
           glDisable(GL_DEPTH_TEST);
           glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
           glClear(GL_COLOR_BUFFER_BIT);
@@ -388,7 +398,6 @@ int main(int, char **)
           ImGui::Begin("OpenGL Settings Panel");
           ImGui::Text("Tweaks");
           ImGui::SliderFloat("Rotation Speed", &spinSpeed, 0.01, 1.0f, "%.3f", 0);
-          ImGui::SliderFloat3("Light Position", &lightPos[0], 0.0f, 100.0f);
           ImGui::SliderFloat3("Directional Light Direction", &lightDir[0], 0.0f, 50.0f);
 
           const char* items[] = {"Identity", "Edge-Detection", "Box-Blur", "Guassian-Blur", "Emboss", "Sharpen"};
@@ -413,6 +422,7 @@ int main(int, char **)
 
      quadVAO.Delete();
      quadVBO.Delete();
+     fboMSAA.Delete();
      fbo.Delete();
      glDeleteBuffers(1, &ubo);
      

@@ -14,8 +14,12 @@ class FBO
         FBO();
         void AttatchTexture(int width, int height);
         void AttatchRenderBuffer(GLenum internalFormat, GLenum attatchmentType, int width, int height);
+        void AttatchTextureMSAA(int samples, int width, int height);
+        void AttatchRenderBufferMSAA(int samples, GLenum internalFormat, GLenum attatchmentType, int width, int height);
+        void Blit(int width, int height);
         void CheckStatus();
         void BindTexture();
+        void BindTextureMSAA();
         void Bind();
         void Unbind();
         void Delete();

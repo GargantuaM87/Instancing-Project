@@ -318,12 +318,13 @@ int main(int, char **)
           glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera.GetViewMatrix()));
           glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-          /* model shader uniforms
+          modelShader.Activate();
+          //model shader uniforms
           modelShader.SetToVec3("uViewPos", &camera.Position[0]);
           modelShader.SetToFloat("shininess", 16.0f);
           // directional light
           modelShader.SetToVec3("dirLight.direction", &lightDir[0]);
-          modelShader.SetToVec3("dirLight.ambient", &glm::vec3(0.4f)[0]);
+          modelShader.SetToVec3("dirLight.ambient", &glm::vec3(0.35f)[0]);
           modelShader.SetToVec3("dirLight.diffuse", &glm::vec3(1.0f)[0]);
           modelShader.SetToVec3("dirLight.specular", &glm::vec3(0.08f)[0]);
           // point light
@@ -333,19 +334,12 @@ int main(int, char **)
           modelShader.SetToVec3("pointLight.specular", &glm::vec3(1.0f)[0]);
           modelShader.SetToFloat("pointLight.constant", 1.0f);
           modelShader.SetToFloat("pointLight.linear", 0.09f);
-          modelShader.SetToFloat("pointLight.quadratic", 0.032f);*/
+          modelShader.SetToFloat("pointLight.quadratic", 0.032f);
 
           //drawing planet
           glm::mat4 model = glm::mat4(1.0f);
           model = glm::scale(model, glm::vec3(10.0f));
           model = glm::rotate(model, static_cast<float>(glfwGetTime()) * spinSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
-          modelShader.Activate();
-          modelShader.SetToMat4("model", model);
-          planet.Draw(modelShader);
-
-          // temp planet as light source
-          model = glm::mat4(1.0f);
-          model = glm::translate(model, glm::vec3(lightPos));
           modelShader.Activate();
           modelShader.SetToMat4("model", model);
           planet.Draw(modelShader);
@@ -395,7 +389,7 @@ int main(int, char **)
           ImGui::Text("Tweaks");
           ImGui::SliderFloat("Rotation Speed", &spinSpeed, 0.01, 1.0f, "%.3f", 0);
           ImGui::SliderFloat3("Light Position", &lightPos[0], 0.0f, 100.0f);
-          ImGui::SliderFloat3("Directional Light Direction", &lightDir[0], 0.0f, 15.0f);
+          ImGui::SliderFloat3("Directional Light Direction", &lightDir[0], 0.0f, 50.0f);
 
           const char* items[] = {"Identity", "Edge-Detection", "Box-Blur", "Guassian-Blur", "Emboss", "Sharpen"};
           

@@ -224,12 +224,11 @@ int main(int, char **)
         glBindVertexArray(0);
      }
 
-
      // multisampled frame buffer
      FBO fboMSAA;
      fboMSAA.AttatchTextureMSAA(4, width, height);
      fboMSAA.AttatchRenderBufferMSAA(4, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, width, height);
-     fboMSAA.CheckStatus();
+     fboMSAA.CheckStatus(); 
      fboMSAA.Unbind();
 
      // intermediate frame buffer
@@ -237,8 +236,6 @@ int main(int, char **)
      fbo.AttatchTexture(width, height);
      fbo.CheckStatus();
      fbo.Unbind();
-
-
 
      // camera object
      Camera camera(width, height, glm::vec3(0.0f, 2.0f, 100.0f));

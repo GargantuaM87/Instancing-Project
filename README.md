@@ -68,3 +68,4 @@ Make sure the project is run on ./main.cpp from either the command line or whate
 ## Preview
 ![Showcase](project.gif)
 ![Post-Processing](kernel.gif)
+![Gamma Correction](gammaC.gif)

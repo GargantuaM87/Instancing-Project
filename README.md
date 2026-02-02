@@ -45,7 +45,7 @@ This project uses:
 ## Installation Steps
 1. Clone this repository, then head inside its directory
 ```bash
-git clone https://github.com/GargantuaM87/OpenGL-Light-Simulation.git
+git clone https://github.com/GargantuaM87/Instancing-Project.git
 cd OpenGL-Light-Simulation
 ```
 2. Create a ./build directory
@@ -63,6 +63,6 @@ cmake ..
 cmake --build .
 ```
 Make sure the project is run on ./main.cpp from either the command line or whatever other method you can utilize
-**WARNING:** Everything might not build correctly. So it's important that you link the project to the appropriate path of glfw3 when you install it!
+**WARNING:** Not all components may build correctly. Therefore, it's essential to link the project to the correct path of glfw3 when you install it.
 
 ## Screenshots

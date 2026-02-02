@@ -12,6 +12,6 @@ void main()
     float refractRatio = 1.00 / 1.52;
     vec3 incident = normalize(vPosition - cameraPos);
     vec3 reflection = reflect(incident, normalize(vNormal));
-    reflection = vec3(reflection.x, -reflection.y, reflection.z);
     FragColor = vec4(texture(skybox, reflection).rgb, 1.0);
 }
+

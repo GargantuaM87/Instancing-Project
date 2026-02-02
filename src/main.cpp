@@ -141,7 +141,6 @@ int main(int, char **)
           return -1;
      }
      // shaders
-     Shader mainShader("../assets/shaders/lightSource.vert", "../assets/shaders/lightSource.frag"); // Shader program for light sources
      Shader framebufferShader("../assets/shaders/framebuffer.vert", "../assets/shaders/framebuffer.frag");
      Shader skyboxShader("../assets/shaders/skybox.vert", "../assets/shaders/skybox.frag");
      Shader modelShader("../assets/shaders/model.vert", "../assets/shaders/model.frag");
@@ -230,18 +229,15 @@ int main(int, char **)
      fboMSAA.AttatchRenderBufferMSAA(4, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, width, height);
      fboMSAA.CheckStatus(); 
      fboMSAA.Unbind();
-
      // intermediate frame buffer
      FBO fbo;
      fbo.AttatchTexture(width, height);
      fbo.CheckStatus();
      fbo.Unbind();
-
      // camera object
      Camera camera(width, height, glm::vec3(0.0f, 2.0f, 100.0f));
      // Setting up the camera's view and projection matrices
      camera.Matrix(45.0f, 0.1f, 200.0f);
-
      // uniform buffer object
      unsigned int ubo;
      glGenBuffers(1, &ubo);
@@ -252,17 +248,13 @@ int main(int, char **)
      glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(camera.GetProjMatrix()));
      glBindBuffer(GL_UNIFORM_BUFFER, 0);
      // setting uniform block points
-     unsigned int mainS_index = glGetUniformBlockIndex(mainShader.ID, "Matrices");
-     glUniformBlockBinding(mainShader.ID, mainS_index, 0);
-     unsigned int instanceS_index = glGetUniformBlockIndex(instanceShader.ID, "Matrices");
-     glUniformBlockBinding(instanceShader.ID, instanceS_index, 0);
      unsigned int modelS_index = glGetUniformBlockIndex(modelShader.ID, "Matrices");
      glUniformBlockBinding(modelShader.ID, modelS_index, 0);
-
-     glEnable(GL_DEPTH_TEST); // Allows for depth comparison and updates the depth buffer
-    // glEnable(GL_BLEND); // enable alpha blending
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+     unsigned int instanceS_index = glGetUniformBlockIndex(instanceShader.ID, "Matrices");
+     glUniformBlockBinding(instanceShader.ID, instanceS_index, 0);
+     // Allows for depth comparison and updates the depth buffer
+     glEnable(GL_DEPTH_TEST); 
+     // Main Variables
      glm::vec3 lightPos(1.0f);
      glm::vec3 lightDir(1.0f);
      float spinSpeed = 0.01f;
@@ -301,7 +293,6 @@ int main(int, char **)
 
           glClearColor(0.0f, 0.0f, 0.15f, 1.0f);
           glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-          
           
           ImGui_ImplOpenGL3_NewFrame();
           ImGui_ImplGlfw_NewFrame();
@@ -421,7 +412,7 @@ int main(int, char **)
      quadVBO.Delete();
      fboMSAA.Delete();
      fbo.Delete();
-     glDeleteBuffers(1, &ubo);
+     //glDeleteBuffers(1, &ubo);
      
      glfwTerminate();
      return 0;

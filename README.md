@@ -65,4 +65,5 @@ cmake --build .
 Make sure the project is run on ./main.cpp from either the command line or whatever other method you can utilize
 **WARNING:** Not all components may build correctly. Therefore, it's essential to link the project to the correct path of glfw3 when you install it.
 
-## Screenshots
+## Preview
+![Showcase](project.gif)

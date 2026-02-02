@@ -46,7 +46,7 @@ This project uses:
 1. Clone this repository, then head inside its directory
 ```bash
 git clone https://github.com/GargantuaM87/Instancing-Project.git
-cd OpenGL-Light-Simulation
+cd Instancing-Project
 ```
 2. Create a ./build directory
 ```bash

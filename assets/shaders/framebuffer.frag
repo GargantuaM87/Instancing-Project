@@ -79,7 +79,7 @@ void main() {
         col += sampleTex[i] * kernel[i];
    }
 
-   if(gammaCorrection == 1)
+   if(gammaCorrection == 0)
     gamma = 2.2;
    else 
     gamma = 1.0;

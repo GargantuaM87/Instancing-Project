@@ -7,7 +7,8 @@ To explain what this project contains a little more...
 - Image Processing: Created a frame buffer that initially contains empty color data through an image texture. It is filled with the scene's color data as an off-screen buffer. With this frame buffer, I can do some post-processing with kernel effects.
 - Anti-Aliasing: I created another frame buffer that is drawn to with Multi-Sampling Anti Aliasing (MSAA), then I blitted the information from this MSAA frame buffer to an intermediate frame buffer so I could continue doing post-processing.
 - Cube Mapping: A space skybox that is centered around the player. I found the way to keep this skybox centered around the player really fascinating. You take the upper-left 3x3 section of a 4x4 view matrix, leaving the translation part just outside this section, therefore only rotating will change how the skybox looks (scaling too, but there's no way for the player to do that).
-- Environment Mapping: Gave the instantiated icospheres reflective/refractive properties by sampling from the surrounding cubemap with calculated vectors 
+- Environment Mapping: Gave the instantiated icospheres reflective/refractive properties by sampling from the surrounding cubemap with calculated vectors
+- Gamma Correction: A topic that I'm not as informed about as I want to. When gamma correction is on, the scene is much brighter; the inverse is true as well. 
 
 
 ## Required Software
